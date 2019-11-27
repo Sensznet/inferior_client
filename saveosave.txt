@@ -1,0 +1,70 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+import java.awt.*;
+import javax.swing.*;
+/**
+ *
+ * @author Derok
+ */
+public class Interface {
+    private int hpmax, hpmom, xpos0, ypos0, manamax, manamom, exp, expmax;
+    private WorldThread welt;
+    private int breite1,breite2,breite3;
+    private boolean aktive;
+    private Image interface1;
+    private Main client;
+    
+    Interface(WorldThread welt)
+    {
+        interface1 = Toolkit.getDefaultToolkit().getImage("./build/Bilder/HPMPEXP3.png");
+        this.welt = welt;
+    }
+    void setpos(int xpos, int ypos)
+    {
+        aktive = true;
+        xpos0 = xpos+104;
+        ypos0 = ypos+27;
+        aktive = true;
+    }
+    void paintg(Graphics g)
+    {
+        if(aktive==true)
+        {
+            hpmax = welt.gethpmax();                                    //Bekommen der Werte mana/hp usw für den Spieler
+            hpmom = welt.gethpom();
+            manamax = welt.getmanamax();
+            manamom = welt.getmanamom();
+            exp = welt.getexp();
+            expmax = welt.getexpmax();
+            breite1 = 2000000/hpmax*hpmom/10000;                        //Ausrichtung der Werte für den balken
+            breite2 = 2000000/manamax*manamom/10000;
+            breite3 = 2000000/expmax*exp/10000;
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setColor(Color.red);                                     //HP balken zeichnen
+            g2.drawRect(xpos0-500, ypos0-360, 200, 15);
+            g2.fillRect(xpos0-500, ypos0-360, breite1, 15);
+            g2.setColor(Color.blue);                                    //Mana balken zeichnen
+            g2.drawRect(xpos0-500, ypos0-338, 200, 15);
+            g2.fillRect(xpos0-500, ypos0-338, breite2, 15);
+                    g2.setColor(Color.DARK_GRAY);                       //Exp balken zeichnen
+            g2.drawRect(xpos0-500, ypos0-316, 200, 15);
+            g2.fillRect(xpos0-500, ypos0-316, breite3, 15);
+            g2.drawImage(interface1, xpos0-636, ypos0-404, client);     //MANAHPEXP bild zeichnen
+            g2.setColor(Color.white);                                  
+            g2.drawString(String.valueOf(hpmax), xpos0-450, ypos0-349);   //Schrift für HP
+            g2.drawString("/", xpos0-400, ypos0-349);
+            g2.drawString(String.valueOf(hpmom), xpos0-380, ypos0-349);
+            g2.drawString(String.valueOf(manamax), xpos0-450, ypos0-327); //Schrift für Mana
+            g2.drawString("/", xpos0-400, ypos0-327);
+            g2.drawString(String.valueOf(manamom), xpos0-380, ypos0-327);
+            g2.drawString(String.valueOf(exp), xpos0-450, ypos0-304);     //Schrift für Exp
+            g2.drawString("/", xpos0-400, ypos0-304);
+            g2.drawString(String.valueOf(expmax), xpos0-380, ypos0-304);
+            
+            
+
+        }
+    }
+}
