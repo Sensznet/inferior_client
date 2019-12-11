@@ -153,47 +153,6 @@ public class Login extends Panel {
                 oldversion = Integer.parseInt(tmp);
                 System.out.println(tmp); 
                 test.close();
-                server = new Socket(ServerIp, 3117);
-                InputStream in = server.getInputStream();
-                DataInputStream dins = new DataInputStream(in);
-                OutputStream out = server.getOutputStream();
-                DataOutputStream  dout = new DataOutputStream(out);
-                
-                version = dins.readInt();
-                dout.writeInt(oldversion);
-                if(oldversion!=version)
-                {
-                    FileOutputStream fileOut = new FileOutputStream("./clientmitup.jar");
-                    LBu.setText("Please wait");
-                    byte[] buffer = new byte[16384];
-                    while (server.isConnected()) {
-                    int bytesRead = in.read(buffer);
-                    if (bytesRead == -1) break;
-                    fileOut.write(buffer, 0, bytesRead);
-                    }  
-                    fileOut.close();
-                    oldversion=version;
-                    k=1;
-                    LBu.setText("Update Completed");
-
-                }
-                else
-                {
-                    fortschritt=200;
-                    fortschritt2="100%";
-                    repaint();
-                    LBu.setText("already updated");
-                    k=0;
-                }
-                if(k==1)
-                {
-                    BufferedWriter tests = new BufferedWriter(new FileWriter("version.txt"));
-                    String tmps = String.valueOf(oldversion);
-                    tests.write(tmps);
-                    tests.close();
-
-                }
-                server.close();
                 update=true;
             }
             catch( UnknownHostException e ) 
