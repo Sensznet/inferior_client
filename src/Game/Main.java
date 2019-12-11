@@ -4,15 +4,23 @@ package Game;
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-import Game.Objects.Player;
+import Game.Interface.Menue;
+import Game.Interface.Login;
+import Game.Interface.Chat;
+import Game.Interface.Gameview;
+import Game.Interface.Overlay;
+import Game.Objects.OwnPlayer;
+import Game.Objects.World;
 import java.applet.*;
 import java.awt.*;
 import java.net.*;
 import java.io.*;
-import java.awt.event.*;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 /**
  *
  * @author Derok
@@ -22,43 +30,35 @@ public class Main extends Panel implements Runnable
     private int id, xpos, ypos, zaehler1;
     private Image dbImage;
     private Graphics dbg;
-    private Socket server = null;
     private Chat chat;
     private Menue menu;
+    private World world;
     private WorldThread welt;
     private MonsterThread mobs;
-    private Player player;
     private Login win;
     private fightsystem fs;
-    private Interfacee face;
-    private Skillbar bar;
-    private Minimap map;
     private boolean loggedin = false, start = true, menueaktive=false;
-    private Image Haus1, Haus2, Haus3, Haus4, Hintergrund, Wasser, Weg, baum1, baum2; 
     private String nick, ServerIp= "localhost";
     private AudioClip sound;
-    public Main()
+    
+    /** Interfaces */
+    private Overlay overlay;
+    private Gameview gameview;
+    private int width;
+    private int height;
+
+    public Main(int width, int height)
     {
-        this.setSize(1024,768);
-        Hintergrund = Toolkit.getDefaultToolkit().getImage("./build/Bilder/BG3000.jpg");
-        Haus1 = Toolkit.getDefaultToolkit().getImage("./build/Bilder/haus1.png");
-        Haus2 = Toolkit.getDefaultToolkit().getImage("./build/Bilder/haus2.png");
-        Haus3 = Toolkit.getDefaultToolkit().getImage("./build/Bilder/haus3.png");
-        Haus4 = Toolkit.getDefaultToolkit().getImage("./build/Bilder/haus4.png");
-        Wasser = Toolkit.getDefaultToolkit().getImage("./build/Bilder/wasser2.png");
-        baum1 = Toolkit.getDefaultToolkit().getImage("./build/Bilder/Baum1.png");
-        baum2 = Toolkit.getDefaultToolkit().getImage("./build/Bilder/Baum2.png");
-        Weg = Toolkit.getDefaultToolkit().getImage("./build/Bilder/weg3000.png");
-        welt = new WorldThread(ServerIp);
-        face = new Interfacee(welt);
-        mobs = new MonsterThread(ServerIp, face);
+        this.setSize(width,height);
+        world = new World();
+        welt = new WorldThread(ServerIp, this, world);
+        mobs = new MonsterThread(ServerIp, world);
         menu = new Menue(welt, mobs, this);
-        player = new Player(welt, face, mobs, this);
-        win = new Login(ServerIp);
-        fs = new fightsystem(mobs, player);       
+        win = new Login(ServerIp, this);
+        fs = new fightsystem(world, mobs);       
         chat = new Chat(ServerIp);
-        bar = new Skillbar();
-        map = new Minimap();
+        this.width = width;
+        this.height = height;
         Cursor c = getToolkit().createCustomCursor( 
         new ImageIcon( "cursor1.png" ).getImage(), 
         new Point(10,10), "Cursor" ); 
@@ -67,31 +67,31 @@ public class Main extends Panel implements Runnable
         try {
             sound = Applet.newAudioClip(f.toURL());
         } catch (MalformedURLException ex) {
-            Logger.getLogger(Inferior.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
         }
         sound.loop();
         add(win);
         add(chat);
-        add(bar);
-        add(map);
         add(menu);
+        this.setVisible(true);
         start();
-    } 
+    }
     public void start() 
     {
         Thread th = new Thread (this);
         th.start();
         mobs.start();
-    }   
+    }
     public boolean keyDown(Event e, int key)
     {
+        OwnPlayer player = world.getPlayer();
         if(key==100)
         {
-            player.kright(true);
+            player.right(true);
         }
         if(key==97)
         {
-            player.kleft(true);
+            player.left(true);
         }
         if(key==Event.ESCAPE)
         {
@@ -108,121 +108,114 @@ public class Main extends Panel implements Runnable
         }
         if(key==119)
         {
-            player.kup(true);
+            player.up(true);
         }
         if(key==115)
         {
-            player.kdown(true);
+            player.down(true);
         }
         if(key==Event.RIGHT)
         {
-            player.kright(true);
+            player.right(true);
         }
         if(key==Event.LEFT)
         {
-            player.kleft(true);
+            player.left(true);
         }
         if(key==Event.UP)
         {
-            player.kup(true);
+            player.up(true);
         }
         if(key==Event.DOWN)
         {
-            player.kdown(true);
+            player.down(true);
         }
         if(key==49)
         {
-            if(mobs.getclicked()==true)
+            /*if(mobs.getclicked()==true)
             {
                 fs.attack(1);
-            }
+            }*/
         }
         return true;
     }
     public boolean keyUp(Event e, int key)
     {
+        OwnPlayer player = world.getPlayer();
         if(key==100)
         {
-            player.kright(false);
+            player.right(false);
         }
         if(key==97)
         {
-            player.kleft(false);
+            player.left(false);
         }
         if(key==119)
         {
-            player.kup(false);
+            player.up(false);
         }
         if(key==115)
         {
-            player.kdown(false);
+            player.down(false);
         }    
         if(key==Event.RIGHT)
         {
-            player.kright(false);
+            player.right(false);
         }
         if(key==Event.LEFT)
         {
-            player.kleft(false);
+            player.left(false);
         }
         if(key==Event.UP)
         {
-            player.kup(false);
+            player.up(false);
         }
         if(key==Event.DOWN)
         {
-            player.kdown(false);
+            player.down(false);
         }   
         return true;
     }
     public boolean mouseUp (Event e, int x, int y)
     { 
-        int xx = player.getxpos();
-        int yy = player.getypos();
-        xx = xx+x-512;
-        yy = yy+y-384;
-        mobs.clickedonMob(xx, yy);
+        OwnPlayer player = world.getPlayer();
+        if(player instanceof OwnPlayer) {
+            int xx = player.getXpos();
+            int yy = player.getYpos();
+            xx = xx+x-512;
+            yy = yy+y-384;
+            mobs.clickedonMob(xx, yy);
+        }
         return true;
     }
     public void run ()
     {
+        
         while (true)
         {
-            if(loggedin==true)
-            {
-                if(start==true)
-                {
-                    welt.loadData(player);
-                    chat.active(nick);
-                    menu.setchat(chat);
-                    bar.setaktive();
-                    map.setaktive();
-                    start = false; 
-                    welt.start();
-                }
-                repaint();
-            }
-            else
-            {
-                id=win.getid();
-                if(id!=0)
-                {
-                    welt.setid(id);
-                    player.setid(id);
-                    nick = win.getnick();                
-                    loggedin=true; 
-                }                
-            }
-            
+            repaint();
             try
             {
-                Thread.sleep (35);
+                Thread.sleep (16);
             }
             catch (InterruptedException ex)
             {
-               
             }
         }
+    }
+    
+    public void setId(int id) {
+        welt.loadData(id);
+        gameview = new Gameview(width, height, world);
+        overlay = new Overlay(width, height, world);
+        add(overlay);
+        add(gameview);
+        chat.active(nick);
+        menu.setchat(chat);
+        gameview.setActive();
+        overlay.setActive();
+        start = false; 
+        welt.start();
     }
     
     public void update (Graphics g)
@@ -242,31 +235,11 @@ public class Main extends Panel implements Runnable
     public void paint (Graphics g)
     {
         Graphics2D g2 = (Graphics2D) g;
-        if(loggedin==false)
-        {
-            g2.fillRect(0,0,1024,768);
-            g2.drawImage(Hintergrund, -30000, -30000, this);
-            g2.drawImage(Weg, -30000, -30000, this);
-            g2.drawImage(Wasser, -30000, -30000, this);
-        }
-        if(loggedin==true)
-        {
-            player.move();
-            g2.drawImage(Hintergrund, -512, -384, this);
-            g2.drawImage(Weg, -512, -384, this);
-            g2.drawImage(Wasser, -512, -384, this);
-            mobs.paintp(g);
-            welt.paintp(g);
-            int k=0;
-            while(k<=zaehler1-1)
-            {
-                //objektss[k].paint(g);
-                k++;
-            }
-            player.paintp(g);
-            face.paintg(g);
-            menu.paintg(g);
+        if(!start) {
+            gameview.paint(g2);
+            overlay.paint(g2);
+        } else {
+            g2.fillRect(0,0,width,height);
         }
     }
-
 }

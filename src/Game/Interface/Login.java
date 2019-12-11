@@ -1,9 +1,11 @@
-package Game;
+package Game.Interface;
 
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+import Game.Main;
+import Game.Registrations;
 import java.awt.*;
 import java.net.*;
 import java.io.*;
@@ -37,9 +39,11 @@ public class Login extends Panel {
     private String ServerIp, fortschritt2="0%";
     private boolean update=false;
     private Registrations regist;
-    Login(String ServerIp)
+    private Main main;
+    public Login(String ServerIp, Main main)
     {
         this.ServerIp=ServerIp;
+        this.main = main;
         regist = new Registrations(ServerIp);
         this.setBounds(400,234,200,300);
         this.setVisible(true);
@@ -83,6 +87,7 @@ public class Login extends Panel {
                 if(id!=0)
                 {
                     nick1=nick;
+                    main.setId(id);
                     this.setVisible(false);
                 }
                 else

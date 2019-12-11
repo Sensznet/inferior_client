@@ -5,91 +5,76 @@
  */
 package Game.Objects;
 
+import Game.Main;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Toolkit;
+
 /**
  *
  * @author ssens
  */
-public class Monster {
-    private int id;
-    private int xpos;
-    private int ypos;
+public class Monster extends Creature {
     private int type;
-    private int direction;
-    private int curHp;
-    private int maxHp;
-    private String name;
     private int width = 5;
     private int height = 15;
+    private final Main client;
+    private final Image Mobpic1, Mobpic2, Mobpic3, Mobpic4, Mobpic5, Mobpic6, Mobpic7, Mobpic8;
     
-    
-    public Monster(int id, int type, String name, int xpos, int ypos, int direction, int maxHp, int curHp) {
-        this.id = id;
+    public Monster(Main client, int id, int type, String name, int xpos, int ypos, int direction, int maxHp, int curHp) {
+        super(id, name, xpos, ypos, direction, maxHp, curHp);
         this.type = type;
-        this.name = name;
-        this.xpos = xpos;
-        this.ypos = ypos;
-        this.direction = direction;
-        this.curHp = curHp;
-        this.maxHp = maxHp;
+        this.client = client;
+        Mobpic1 = Toolkit.getDefaultToolkit().getImage("./build/Bilder/wolf4.png");
+        Mobpic2 = Toolkit.getDefaultToolkit().getImage("./build/Bilder/wolf5.png");
+        Mobpic3 = Toolkit.getDefaultToolkit().getImage("./build/Bilder/wolf6.png");
+        Mobpic4 = Toolkit.getDefaultToolkit().getImage("./build/Bilder/wolf7.png");
+        Mobpic5 = Toolkit.getDefaultToolkit().getImage("./build/Bilder/wolf.png");
+        Mobpic6 = Toolkit.getDefaultToolkit().getImage("./build/Bilder/wolf1.png");
+        Mobpic7 = Toolkit.getDefaultToolkit().getImage("./build/Bilder/wolf2.png");
+        Mobpic8 = Toolkit.getDefaultToolkit().getImage("./build/Bilder/wolf3.png");
     }
     
-    public int getId() {
-        return this.id;
-    }
-
-    public int getXpos() {
-        return this.xpos;
-    }
-    
-    public void setXpos(int xpos) {
-        this.xpos = xpos;
-    }
-    
-    public int getYpos() {
-        return this.ypos;
-    }
-
-    public void setYpos(int ypos) {
-        this.ypos = ypos;
-    }
-
     public int getType() {
         return this.type;
-    }
-
-    public int getDirection() {
-        return this.direction;
     }
 
     public void setDirection(int direction) {
         this.direction = direction;
     }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public int getCurHp() {
-        return curHp;
-    }
-
-    public void setCurHp(int curHp) {
-        this.curHp = curHp;
-    }
-
-    public int getMaxHp() {
-        return maxHp;
-    }
-
-    public void setMaxHp(int maxHp) {
-        this.maxHp = maxHp;
-    }
-    
+   
     public int getHeight() {
         return this.height;
     }
     
     public int getWidth() {
         return this.width;
+    }
+    
+    public void paintp(Graphics g)
+    {
+        switch(direction)
+        {
+            case 1:
+                g.drawImage(Mobpic1, xpos-20, ypos-20, client);break;
+            case 2:
+                g.drawImage(Mobpic2, xpos-20, ypos-20, client);break;
+            case 3:
+                g.drawImage(Mobpic3, xpos-20, ypos-20, client);break;
+            case 4:
+                g.drawImage(Mobpic4, xpos-20, ypos-20, client);break;
+            case 5:
+                g.drawImage(Mobpic5, xpos-20, ypos-20, client);break;
+            case 6:
+                g.drawImage(Mobpic6, xpos-20, ypos-20, client);break;
+            case 7:
+                g.drawImage(Mobpic7, xpos-20, ypos-20, client);break;
+            case 8:
+                g.drawImage(Mobpic8, xpos-20, ypos-20, client);break;
+        };
+        g.setColor(Color.ORANGE);
+        g.drawString(name, xpos, ypos-15);      
     }
 }

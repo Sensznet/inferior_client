@@ -4,8 +4,17 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/G:/Dokumente/clientmitUp/src/Game/Chat.java</file>
-            <file>file:/G:/Dokumente/clientmitUp/src/Game/ChatThreat.java</file>
+            <file>file:/C:/Users/ssens/git/inferior_client/src/Game/ConnectionThread.java</file>
+            <file>file:/C:/Users/ssens/git/inferior_client/src/Game/Interface/Overlay.java</file>
+            <file>file:/C:/Users/ssens/git/inferior_client/src/Game/Interface/Minimap.java</file>
+            <file>file:/C:/Users/ssens/git/inferior_client/src/Game/Interface/Login.java</file>
+            <file>file:/C:/Users/ssens/git/inferior_client/src/Game/Objects/Monster.java</file>
+            <file>file:/C:/Users/ssens/git/inferior_client/src/Game/Collision.java</file>
+            <file>file:/C:/Users/ssens/git/inferior_client/src/Game/Objects/Player.java</file>
+            <file>file:/C:/Users/ssens/git/inferior_client/src/Game/Main.java</file>
+            <file>file:/C:/Users/ssens/git/inferior_client/src/Game/Interface/Gameview.java</file>
+            <file>file:/C:/Users/ssens/git/inferior_client/src/Game/Objects/Object.java</file>
+            <file>file:/C:/Users/ssens/git/inferior_client/src/Game/Objects/OwnPlayer.java</file>
         </group>
     </open-files>
 </project-private>

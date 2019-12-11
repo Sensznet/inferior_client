@@ -1,7 +1,8 @@
 package Game;
 
-import Game.Objects.Monster;
-import Game.Objects.Player;
+import Game.Objects.Creature;
+import Game.Objects.OwnPlayer;
+import Game.Objects.World;
 
 /*
  * To change this template, choose Tools | Templates
@@ -13,14 +14,13 @@ import Game.Objects.Player;
  * @author Derok
  */
 public class fightsystem extends Thread{
-    
-    private MonsterThread mobs;
-    private Player player;
+    private World world;
+    private MonsterThread MT;
     private boolean cooltime=false;
-    fightsystem(MonsterThread mobs, Player player)
+    fightsystem(World world, MonsterThread MT)
     {
-        this.mobs = mobs;
-        this.player = player;
+        this.world = world;
+        this.MT = MT;
         this.start();
     }
     public void run()
@@ -57,23 +57,25 @@ public class fightsystem extends Thread{
         int dmg;
         int pxpos, pypos, mxpos, mypos;
         int xdist, ydist, dist;
-        Monster monster = mobs.getSelectedMonster();
-        if(cooltime==false && monster != null)
+        Creature target = world.getTarget();
+        OwnPlayer player = world.getPlayer();
+        if(cooltime==false && target != null)
         {
             cooltime=true;
             if(skill==1)
             {
-                pxpos = player.getxpos();
-                pypos = player.getypos();
                 
-                xdist = pxpos - monster.getXpos();
-                ydist = pypos - monster.getYpos();
+                pxpos = player.getXpos();
+                pypos = player.getYpos();
+                
+                xdist = pxpos - target.getXpos();
+                ydist = pypos - target.getYpos();
                 dist = (int)Math.sqrt((xdist*xdist)+(ydist*ydist));
                 if(dist<=50)
                 {
-                    player.setattackanimationtrue();
+                    player.setAttackAnimation(true);
                     dmg = (int)(Math.random()*5)+5;
-                    mobs.attackmob(monster, dmg);
+                    MT.attackCreature(target, dmg);
                 }
             }
         }        

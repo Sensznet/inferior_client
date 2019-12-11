@@ -1,9 +1,16 @@
-package Game;
+package Game.Interface;
 
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+import Game.Interface.Chat;
+import Game.Main;
+import Game.Main;
+import Game.MonsterThread;
+import Game.MonsterThread;
+import Game.WorldThread;
+import Game.WorldThread;
 import java.awt.*;
 import java.net.*;
 import javax.swing.*;
@@ -21,7 +28,7 @@ public class Menue extends Panel
     private Chat chat;
     private Image background;
     private Main client;
-    Menue(WorldThread welt, MonsterThread mobs, Main client)
+    public Menue(WorldThread welt, MonsterThread mobs, Main client)
     {
         this.welt = welt;
         this.mobs = mobs;

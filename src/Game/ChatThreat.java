@@ -4,6 +4,7 @@ package Game;
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+import Game.Interface.Chat;
 import java.net.*;
 import java.io.*;
 import java.awt.*;
@@ -15,7 +16,7 @@ import org.json.JSONObject;
 public class ChatThreat extends ConnectionThread
 {
     private Chat chat;
-    ChatThreat(Chat chat, String ServerIp)
+    public ChatThreat(Chat chat, String ServerIp)
     {
         super(ServerIp, 3116);
         this.chat = chat;

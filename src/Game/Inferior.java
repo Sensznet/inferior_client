@@ -13,8 +13,11 @@ package Game;
  */
 public class Inferior extends javax.swing.JFrame {
     /** Creates new form Inferior */
+    private int width = 1920;
+    private int height = 1080;
     public Inferior() {
         initComponents();
+        this.setSize(width, height);
     }
 
     /** This method is called from within the constructor to
@@ -26,11 +29,12 @@ public class Inferior extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        panel1 = new Main();
+        panel1 = new Main(width,height);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Inferior");
-        setMinimumSize(new java.awt.Dimension(1024, 768));
+        setMinimumSize(new java.awt.Dimension(1920, 1080));
+        setPreferredSize(new java.awt.Dimension(1280, 720));
         setResizable(false);
 
         javax.swing.GroupLayout panel1Layout = new javax.swing.GroupLayout(panel1);

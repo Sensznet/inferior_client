@@ -3,31 +3,28 @@
  * and open the template in the editor.
  */
 
-package Game;
+package Game.Interface;
 import java.awt.*;
+import javax.swing.JPanel;
 /**
  *
  * @author Derok
  */
-public class Minimap extends Panel
+public class Target extends JPanel
 {
-    Image minimap;
-    Minimap()
+    Image hpbar;
+    public Target()
     {
         this.setVisible(false);
         this.setBounds(864,0,160,160);
-        minimap = Toolkit.getDefaultToolkit().getImage("./build/Bilder/InterfaceMinimap.png");
+        hpbar = Toolkit.getDefaultToolkit().getImage("./build/Bilder/mobhp.png");
     }
-    public void setaktive()
+    public void setActive()
     {
         this.setVisible(true);
     }
-    public void painter()
-    {
-        repaint();
-    }
     public void paint(Graphics g)
     {
-        g.drawImage(minimap, 0, 0, this);
+        g.drawImage(hpbar, 0, 0, this);
     }
 }

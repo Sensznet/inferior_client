@@ -1,9 +1,11 @@
-package Game;
+package Game.Interface;
 
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+import Game.ChatThreat;
+import Game.ChatThreat;
 import java.net.*;
 import java.awt.*;
 import java.awt.Event.*;
@@ -18,7 +20,7 @@ import javax.swing.*;
  *
  * @author Derok
  */
-public class Chat extends Panel
+public class Chat extends JPanel
 {
     private String text, nick;
     public Login login;
@@ -29,7 +31,7 @@ public class Chat extends Panel
     private JTextField TFt = new JTextField(20);
     private TextArea TA = new TextArea("",5,10,1);
     String ip;
-    Chat(String ip)
+    public Chat(String ip)
     {
         
         this.ip = ip;

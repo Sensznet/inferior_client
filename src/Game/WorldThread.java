@@ -4,10 +4,10 @@ package Game;
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+import Game.Objects.OwnPlayer;
 import Game.Objects.Player;
-import java.awt.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import Game.Objects.World;
+import java.util.ArrayList;
 import org.json.*;
 /**
  *
@@ -15,132 +15,98 @@ import org.json.*;
  */
 public class WorldThread extends ConnectionThread
 {
-    private int id=0, k=0, s=0,o=1, xpos, ypos, hpmax=1, hpmom=1, 
-                manamax=1, manamom=1, richtung=1, exp=0, expmax=1, agi=0, 
-                intel=0, str=0, u;
-    private int[] gxpos= new int[100];
-    private int[] gypos= new int[100];
-    private int[] ghpmax= new int[100];
-    private int[] ghpmom= new int[100];
-    private int[] grichtung = new int[100];
-    private String[] nick= new String[100];
-    private boolean[] online= new boolean[100];
-    private boolean aktive=false;
-    private Main client;
-    private Image Spieler1, Spieler2, Spieler3, Spieler4, 
-            Spieler5, Spieler6, Spieler7, Spieler8;
-    WorldThread(String ServerIp)
+    private World world;
+    private final Main client;
+    WorldThread(String ServerIp, Main client, World world)
     {
         super(ServerIp, 3114);
-        do
-        {
-            nick[o]="";
-            o++;
-        }while(o!=99);       
-        do
-        {
-            online[k]=false;
-            k++;
-        }while(k!=99);
-        Spieler1 = Toolkit.getDefaultToolkit().getImage("./build/Bilder/Spieler.png");
-        Spieler2 = Toolkit.getDefaultToolkit().getImage("./build/Bilder/Spieler1.png");
-        Spieler3 = Toolkit.getDefaultToolkit().getImage("./build/Bilder/Spieler2.png");
-        Spieler4 = Toolkit.getDefaultToolkit().getImage("./build/Bilder/Spieler3.png");
-        Spieler5 = Toolkit.getDefaultToolkit().getImage("./build/Bilder/Spieler4.png");
-        Spieler6 = Toolkit.getDefaultToolkit().getImage("./build/Bilder/Spieler5.png");
-        Spieler7 = Toolkit.getDefaultToolkit().getImage("./build/Bilder/Spieler6.png");
-        Spieler8 = Toolkit.getDefaultToolkit().getImage("./build/Bilder/Spieler7.png");
+        this.client = client;
+        this.world = world;
     }
     @Override
     public void run()
     {
         while(running) {
-            if(this.tick() && aktive==true) {
+            if(this.tick()) {
+                OwnPlayer player = world.getPlayer();
+                if(player instanceof OwnPlayer) {
                     JSONObject obj = new JSONObject();
                     obj.put("type", "refresh");
-                    obj.put("xpos", xpos);
-                    obj.put("ypos", ypos);
-                    obj.put("direction", richtung);
+                    obj.put("xpos", player.getXpos());
+                    obj.put("ypos", player.getYpos());
+                    obj.put("direction", player.getDirection());
                     this.sendData(obj);
                     JSONObject response = this.getData();
-                    hpmax = response.getInt("maxHp");
-                    hpmom = response.getInt("curHp");
-                    manamax = response.getInt("maxMana");
-                    manamom = response.getInt("curMana");
-                    exp = response.getInt("curExp");
-                    expmax = response.getInt("maxExp");
+                    player.setMaxHp(response.getInt("maxHp"));
+                    player.setCurHp(response.getInt("curHp"));
+                    player.setMaxMana(response.getInt("maxMana"));
+                    player.setCurMana(response.getInt("curMana"));
+                    player.setCurExp(response.getInt("curExp"));
+                    player.setMaxExp(response.getInt("maxExp"));
                     JSONArray players = response.getJSONArray("players");
-                    int count = 0;
-                    k=0;
-                    do
-                    {
-                        online[k]=false;
-                        k++;
-                    }while(k!=99);
-                    for(Object tplayer : players) {
-                        JSONObject player = (JSONObject)tplayer;
-                        gxpos[count] = player.getInt("xpos");
-                        gypos[count] = player.getInt("ypos");
-                        grichtung[count] = player.getInt("direction");
-                        nick[count] = player.getString("name");
-                        ghpmax[count] = player.getInt("maxHp");
-                        ghpmom[count] = player.getInt("curHp");
-                        online[count] = true;
+                    ArrayList<Integer> activeIds = new ArrayList<>();
+                    for(Object OPlayer : players) {
+                        JSONObject jPlayer = (JSONObject)OPlayer;
+                        Boolean found = false;
+                        int id = jPlayer.getInt("id");
+                        activeIds.add(id);
+                        for(Player tplayer : world.getPLayers()) {
+                            if(tplayer.getId() == id) {
+                                found = true;
+                                tplayer.setXpos(jPlayer.getInt("xpos"));
+                                tplayer.setYpos(jPlayer.getInt("ypos"));
+                                tplayer.setDirection(jPlayer.getInt("direction"));
+                                tplayer.setMaxHp(jPlayer.getInt("maxHp"));
+                                tplayer.setCurHp(jPlayer.getInt("curHp"));
+
+                            }
+                        }
+                        if(!found) {
+                            world.addPlayer(new Player(client, id, jPlayer.getString("name"), jPlayer.getInt("xpos"), jPlayer.getInt("ypos"), 
+                                    jPlayer.getInt("direction"), jPlayer.getInt("maxHp"), jPlayer.getInt("curHp"), jPlayer.getInt("lvl")));
+                        }
                     }
+                    for(Player tplayer : world.getPLayers()) {
+                        boolean found = false;
+                        for(Integer activeId : activeIds) {
+                            if(activeId == player.getId()) {
+                                found = true;
+                            }
+                        }
+                        if(!found) {
+                            world.removePlayer(tplayer);
+                        }
+                    }
+                }
             }
         }
         
     }
-    int gethpmax()
-    {
-        return hpmax;
-    }
-    int gethpom()
-    {
-        return hpmom;
-    }
-    int getmanamax()
-    {
-        return manamax;
-    }
-    int getmanamom()
-    {
-        return manamom;
-    }
-    int getexp()
-    {
-        return exp;
-    }
-    int getexpmax()
-    {
-        return expmax;
-    }
-    public void setpos(int x, int y, int richtung, boolean aktive)
-    {
-        this.richtung = richtung;
-        this.aktive = aktive;
-        xpos=x;
-        ypos=y;
-    }
     public void getstats()
     {
-        if(aktive==true)
-        {
-            JSONObject obj = new JSONObject();
-            obj.put("type", "attributes");
-            this.sendData(obj);
-            JSONObject response = this.getData();
-            agi = response.getInt("agi");
-            intel = response.getInt("int");
-            str = response.getInt("str");
-        }
+        OwnPlayer player = world.getPlayer();
+        JSONObject obj = new JSONObject();
+        obj.put("type", "attributes");
+        this.sendData(obj);
+        JSONObject response = this.getData();
+        player.setAgi(response.getInt("agi"));
+        player.setInt(response.getInt("int"));
+        player.setStr(response.getInt("str"));
     }
-    public void loadData(Player player) {
+    public void loadData(int id) {
         JSONObject obj = new JSONObject();
         obj.put("type", "initial");
         obj.put("id", id);
         this.sendData(obj);
         JSONObject response = this.getData();
+        OwnPlayer player = new OwnPlayer(world, client, id, response.getString("name"), response.getInt("xpos"), response.getInt("ypos"), response.getInt("direction"), response.getInt("maxHp"),
+                response.getInt("curHp"), response.getInt("maxMana"), response.getInt("curMana"), response.getInt("maxExp"), response.getInt("curExp"), response.getInt("lvl"), 
+                response.getInt("agi"), response.getInt("str"), response.getInt("int"));
+        player.setXpos(response.getInt("xpos"));
+        player.setYpos(response.getInt("ypos"));
+        world.setPlayer(player);
+        
+        
         int countObjects = response.getInt("objectCount");
         /**System.out.println(zaehler1);
          * objektss = new Objektss[zaehler1];
@@ -202,54 +168,12 @@ public class WorldThread extends ConnectionThread
          * }
          * zaehler2--;
          * }**/
-        xpos = response.getInt("xpos");
-        ypos = response.getInt("ypos");
-        player.position(xpos, ypos);
     }
     public void offline()
     {
-        if(aktive==true)
-        {
-            JSONObject obj = new JSONObject();
+        JSONObject obj = new JSONObject();
             obj.put("type", "offline");
             this.sendData(obj);
             this.stopThread();
-            this.stop();
-        }
-    }
-    void setid(int i)
-    {
-        id=i;
-    }
-    void paintp(Graphics g)
-    {
-        Graphics2D g2 = (Graphics2D) g;
-        for(int i=1; i<100;i++)
-        {
-            if(online[i]==true)
-            {
-                g2.setColor(Color.red);
-                switch(grichtung[i])
-                {
-                    case 1:
-                    g2.drawImage(Spieler1, gxpos[i]-5, gypos[i]-5, client); break;
-                    case 2:
-                    g2.drawImage(Spieler2, gxpos[i]-5, gypos[i]-5, client); break;
-                    case 3:
-                    g2.drawImage(Spieler3, gxpos[i]-5, gypos[i]-5, client); break; 
-                    case 4:
-                    g2.drawImage(Spieler4, gxpos[i]-5, gypos[i]-5, client); break; 
-                    case 5:
-                    g2.drawImage(Spieler5, gxpos[i]-5, gypos[i]-5, client); break; 
-                    case 6:
-                    g2.drawImage(Spieler6, gxpos[i]-5, gypos[i]-5, client); break; 
-                    case 7:
-                    g2.drawImage(Spieler7, gxpos[i]-5, gypos[i]-5, client); break; 
-                    case 8:
-                    g2.drawImage(Spieler8, gxpos[i]-5, gypos[i]-5, client); break; 
-                }
-                g2.drawString(nick[i], gxpos[i]+15, gypos[i]+20);
-            }
-        }
     }
 }
